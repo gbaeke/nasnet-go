@@ -1,87 +1,48 @@
 package main
 
 import (
+	"bytes"
+	"encoding/base64"
 	"encoding/json"
-	"flag"
 	"fmt"
+	"html/template"
 	"image"
+	"image/jpeg"
+	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/disintegration/imaging"
 	tf "github.com/tensorflow/tensorflow/tensorflow/go"
 )
 
-func main() {
-	imagePath := flag.String("image", "", "path to image")
-	flag.Parse()
+var model *tf.SavedModel
+var categories map[int][]string
 
-	if *imagePath == "" {
-		log.Fatal("Please specify image path. Use --help for help.")
-	}
-
-	fmt.Println("TensorFlow version: ", tf.Version())
-
-	//turn off logging
-
+func init() {
 	// load tensorflow model from disk
-	model, err := tf.LoadSavedModel("nasnet",
+	var err error
+	model, err = tf.LoadSavedModel("nasnet",
 		[]string{"atag"}, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// read cat image
-	m, err := readImage(*imagePath, 224, 224)
-	if err != nil {
-		log.Fatal("Cannot read image")
-	}
-
-	//get tensor from image
-	tensor, err := getTensor(m)
-	if err != nil {
-		log.Fatal("Cannot get tensor")
-	}
-
-	//run a session
-	output, err := model.Session.Run(
-		map[tf.Output]*tf.Tensor{
-			model.Graph.Operation("input_1").Output(0): tensor,
-		},
-		[]tf.Output{
-			model.Graph.Operation("predictions/Softmax").Output(0),
-		},
-		nil,
-	)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	predictions, ok := output[0].Value().([][]float32)
-
-	if !ok {
-		log.Fatal(fmt.Sprintf("output has unexpected type %T", output[0].Value()))
-	}
-
-	// highest result
-	maxProb := float32(0.0)
-	maxIndex := 0
-	for index, prob := range predictions[0] {
-		if prob > maxProb {
-			maxProb = prob
-			maxIndex = index
-		}
-	}
-
 	// get the categories
-	categories, err := getCategories()
+	categories, err = getCategories()
 	if err != nil {
 		log.Fatal("Error getting categories", err)
 	}
 
-	fmt.Println("Highest prob is", maxProb, "at", maxIndex)
-	fmt.Println("Probably ", categories[maxIndex])
+}
+
+func main() {
+	log.Println("TensorFlow version: ", tf.Version())
+
+	http.HandleFunc("/", upload)
+	http.ListenAndServe(":9090", nil)
 
 }
 
@@ -150,4 +111,88 @@ func getCategories() (map[int][]string, error) {
 		return nil, err
 	}
 	return categories, nil
+}
+
+func upload(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == "GET" {
+		// GET
+		t, _ := template.ParseFiles("upload.gtpl")
+
+		t.Execute(w, nil)
+
+	} else if r.Method == "POST" {
+		// Post
+		file, handler, err := r.FormFile("uploadfile")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer file.Close()
+
+		//we want to save the file
+		f, err := os.OpenFile("./test/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer f.Close()
+
+		io.Copy(f, file)
+
+		//not efficient because we read again
+		m, err := readImage("./test/"+handler.Filename, 224, 224)
+		if err != nil {
+			log.Fatal("Cannot read image")
+		}
+
+		//get tensor from image
+		tensor, err := getTensor(m)
+		if err != nil {
+			log.Fatal("Cannot get tensor")
+		}
+
+		//run a session
+		output, err := model.Session.Run(
+			map[tf.Output]*tf.Tensor{
+				model.Graph.Operation("input_1").Output(0): tensor,
+			},
+			[]tf.Output{
+				model.Graph.Operation("predictions/Softmax").Output(0),
+			},
+			nil,
+		)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		predictions, ok := output[0].Value().([][]float32)
+
+		if !ok {
+			log.Fatal(fmt.Sprintf("output has unexpected type %T", output[0].Value()))
+		}
+
+		// highest result
+		maxProb := float32(0.0)
+		maxIndex := 0
+		for index, prob := range predictions[0] {
+			if prob > maxProb {
+				maxProb = prob
+				maxIndex = index
+			}
+		}
+
+		//base64 encode image data to show image in response
+		buf := new(bytes.Buffer)
+		err = jpeg.Encode(buf, m, nil)
+		encodedImage := base64.StdEncoding.EncodeToString(buf.Bytes())
+
+		fmt.Fprintf(w, "<H1>Highest prob is %v at %v</H1>\n", maxProb, maxIndex)
+		fmt.Fprintf(w, "<H1>Probably %s</H1>", categories[maxIndex])
+		fmt.Fprintf(w, "<div><img src='data:image/jpge;base64, %s'></div>", encodedImage)
+		fmt.Fprintf(w, "<a href='/'>Go back</a>")
+
+	} else {
+		fmt.Println("Unknown HTTP " + r.Method + "  Method")
+	}
 }
