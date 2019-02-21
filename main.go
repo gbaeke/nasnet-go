@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"image"
 	"io/ioutil"
@@ -13,10 +14,16 @@ import (
 )
 
 func main() {
+	imagePath := flag.String("image", "", "path to image")
+	flag.Parse()
+
+	if *imagePath == "" {
+		log.Fatal("Please specify image path. Use --help for help.")
+	}
+
 	fmt.Println("TensorFlow version: ", tf.Version())
 
 	//turn off logging
-	
 
 	// load tensorflow model from disk
 	model, err := tf.LoadSavedModel("nasnet",
@@ -26,7 +33,7 @@ func main() {
 	}
 
 	// read cat image
-	m, err := readImage("cat.jpg", 224, 224)
+	m, err := readImage(*imagePath, 224, 224)
 	if err != nil {
 		log.Fatal("Cannot read image")
 	}
