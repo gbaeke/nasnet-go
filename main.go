@@ -18,6 +18,13 @@ import (
 	tf "github.com/tensorflow/tensorflow/tensorflow/go"
 )
 
+type ResultPageData struct {
+	Probability float32
+	MaxIndex    int
+	Category    string
+	Picture     string
+}
+
 var model *tf.SavedModel
 var categories map[int][]string
 
@@ -187,10 +194,17 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		err = jpeg.Encode(buf, m, nil)
 		encodedImage := base64.StdEncoding.EncodeToString(buf.Bytes())
 
-		fmt.Fprintf(w, "<H1>Highest prob is %v at %v</H1>\n", maxProb, maxIndex)
-		fmt.Fprintf(w, "<H1>Probably %s</H1>", categories[maxIndex])
-		fmt.Fprintf(w, "<div><img src='data:image/jpge;base64, %s'></div>", encodedImage)
-		fmt.Fprintf(w, "<a href='/'>Go back</a>")
+		//response data
+		data := ResultPageData{
+			Probability: maxProb,
+			MaxIndex:    maxIndex,
+			Category:    categories[maxIndex][1],
+			Picture:     encodedImage,
+		}
+
+		//respond with template
+		tmpl := template.Must(template.ParseFiles("response.gtpl"))
+		tmpl.Execute(w, data)
 
 	} else {
 		fmt.Println("Unknown HTTP " + r.Method + "  Method")

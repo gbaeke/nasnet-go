@@ -18,16 +18,15 @@
     <div class="container" style="margin-top: 10px;">
     <div class="card" >
           <div class="card-header">
-              Upload a file
+              Inference Result
           </div>
           <div class="card-body">
-              <form enctype="multipart/form-data" action="/" method="post">
-                      
-                      <input class="form-control-file" type="file" name="uploadfile" /><br>
-            
-                      <button class="form-control btn btn-primary btn-sm" type="submit">Upload file</button>
-              </form>
+              Category: {{.Category}}<BR>
+              Probability: {{.Probability}}<br></br>
+              <img src="data:image/jpg;base64,{{.Picture}}"><br><br>
+              <a class="btn btn-primary btn-sm" href="/">Go Back</a>
             </div>
+          
           </div>
     </div>
     </div>
