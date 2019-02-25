@@ -12,4 +12,4 @@ If you want to build and run the app locally, you will need Linux or MacOS. Chec
 
 Note: to enable SSL set environment variable ssl equal to true (lowercase) and hostname to the hostname for the certificate. Make sure that the hostname resolves to the container on port 80! The code in main.go uses Let's Encrypt staging CAs
 
-Note: if you deploy to Azure Container Instances, remember that the certificate is stored in ephemeral storage. You might hit Let's Encrypt rate limits if you switch to the production CAs and create the container many times. One solution is to mount an Azure File Share on  /.local/share/certmagic
+Note: if you deploy to Azure Container Instances, remember that the certificate is stored in ephemeral storage. You might hit Let's Encrypt rate limits if you switch to the production CAs and create the container many times. One solution is to mount an Azure File Share on  /root/.local/share/certmagic
