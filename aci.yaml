@@ -1,0 +1,32 @@
+apiVersion: 2018-06-01
+location: westeuope
+name: nasnet-app
+properties:
+  containers:
+  - name: nasnet
+    properties:
+      image: gbaeke/nasnet
+      environmentVariables:
+        - name: 'ssl'
+          value: 'true'
+        - name: 'hostname'
+          value: 'nasnet.xylosai.com'
+      resources:
+        requests:
+          cpu: 1
+          memoryInGb: 2
+      ports:
+      - port: 80
+      - port: 443
+  osType: Linux
+  ipAddress:
+    dnsNameLabel: nasnetxylosai
+    type: Public
+    ports:
+    - protocol: tcp
+      port: '80'
+    - protocol: tcp
+      port: '443'
+  restartPolicy: Always
+tags: null
+type: Microsoft.ContainerInstance/containerGroups

@@ -9,3 +9,7 @@ docker run -p 80:9090 -d gbaeke/nasnet
 Afterwards, point a browser at http://localhost and try it out
 
 If you want to build and run the app locally, you will need Linux or MacOS. Check the Dockerfile for prerequisites like the TensorFlow C API.
+
+Note: to enable SSL set environment variable ssl equal to true (lowercase) and hostname to the hostname for the certificate. Make sure that the hostname resolves to the container on port 80! The code in main.go uses Let's Encrypt staging CAs
+
+Note: if you deploy to Azure Container Instances, remember that the certificate is stored in ephemeral storage. You might hit Let's Encrypt rate limits if you switch to the production CAs and create the container many times. One solution is to mount an Azure File Share on  /.local/share/certmagic

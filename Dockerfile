@@ -5,8 +5,7 @@ RUN curl -L \
    "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-1.12.0.tar.gz" | \
    tar -C "/usr/local" -xz
 RUN ldconfig
-# Hide some warnings
-ENV TF_CPP_MIN_LOG_LEVEL 2
+
 
 # Install Go (https://github.com/docker-library/golang/blob/221ee92559f2963c1fe55646d3516f5b8f4c91a4/1.9/stretch/Dockerfile)
 RUN apt-get update && apt-get install -y --no-install-recommends \

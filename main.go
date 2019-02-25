@@ -15,6 +15,7 @@ import (
 	"os"
 
 	"github.com/disintegration/imaging"
+	"github.com/mholt/certmagic"
 	tf "github.com/tensorflow/tensorflow/tensorflow/go"
 )
 
@@ -48,9 +49,40 @@ func init() {
 func main() {
 	log.Println("TensorFlow version: ", tf.Version())
 
-	http.HandleFunc("/", upload)
-	http.ListenAndServe(":9090", nil)
+	//check environment variable to enable SSL
+	sslEnabled := getEnv("ssl", "false")
+	hostName := getEnv("hostname", "")
+	if hostName == "" && sslEnabled == "true" {
+		log.Fatalln("Specify hostname environment variable when SSL is on")
+	}
 
+	if sslEnabled == "true" {
+		log.Println("SSL is on")
+		// certmagic
+		certmagic.Agreed = true
+		certmagic.Email = "mail@mail.com"
+		certmagic.CA = certmagic.LetsEncryptStagingCA
+
+		mux := http.NewServeMux()
+		mux.HandleFunc("/", upload)
+
+		err := certmagic.HTTPS([]string{hostName}, mux)
+		if err != nil {
+			log.Println(err)
+		}
+	} else {
+		http.HandleFunc("/", upload)
+		http.ListenAndServe(":9090", nil)
+	}
+
+}
+
+func getEnv(key, fallback string) string {
+	value, exists := os.LookupEnv(key)
+	if !exists {
+		value = fallback
+	}
+	return value
 }
 
 func getTensor(m image.Image) (*tf.Tensor, error) {
