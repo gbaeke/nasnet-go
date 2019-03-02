@@ -11,6 +11,8 @@ properties:
           value: 'true'
         - name: 'hostname'
           value: 'nasnet.xylosai.com'
+        - name: 'staging'
+          value: 'false'
       resources:
         requests:
           cpu: 1

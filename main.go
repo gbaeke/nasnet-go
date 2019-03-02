@@ -55,13 +55,18 @@ func main() {
 	if hostName == "" && sslEnabled == "true" {
 		log.Fatalln("Specify hostname environment variable when SSL is on")
 	}
+	stagingCA := getEnv("staging", "true")
 
 	if sslEnabled == "true" {
 		log.Println("SSL is on")
 		// certmagic
 		certmagic.Agreed = true
 		certmagic.Email = "mail@mail.com"
-		certmagic.CA = certmagic.LetsEncryptStagingCA
+		if stagingCA == "false" {
+			certmagic.CA = certmagic.LetsEncryptProductionCA
+		} else {
+			certmagic.CA = certmagic.LetsEncryptStagingCA
+		}
 
 		mux := http.NewServeMux()
 		mux.HandleFunc("/", upload)
