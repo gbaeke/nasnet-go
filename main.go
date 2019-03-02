@@ -52,10 +52,10 @@ func main() {
 	//check environment variable to enable SSL
 	sslEnabled := getEnv("ssl", "false")
 	hostName := getEnv("hostname", "")
+	stagingCA := getEnv("staging", "true")
 	if hostName == "" && sslEnabled == "true" {
 		log.Fatalln("Specify hostname environment variable when SSL is on")
 	}
-	stagingCA := getEnv("staging", "true")
 
 	if sslEnabled == "true" {
 		log.Println("SSL is on")
@@ -63,8 +63,10 @@ func main() {
 		certmagic.Agreed = true
 		certmagic.Email = "mail@mail.com"
 		if stagingCA == "false" {
+			log.Println("Using production CA")
 			certmagic.CA = certmagic.LetsEncryptProductionCA
 		} else {
+			log.Println("Using staging CA")
 			certmagic.CA = certmagic.LetsEncryptStagingCA
 		}
 
