@@ -17,6 +17,10 @@ properties:
         requests:
           cpu: 1
           memoryInGb: 2
+      volumeMounts:
+      - mountPath: /root/.local/share/certmagic/
+        name: azurefile
+        readOnly: null
       ports:
       - port: 80
       - port: 443
@@ -30,5 +34,12 @@ properties:
     - protocol: tcp
       port: '443'
   restartPolicy: Always
+  volumes:
+  - azureFile:
+      readOnly: null
+      shareName: certs
+      storageAccountKey: ACCOUNTKEY
+      storageAccountName: nasnetstorage
+    name: azurefile
 tags: null
 type: Microsoft.ContainerInstance/containerGroups
