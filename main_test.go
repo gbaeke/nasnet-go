@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -45,7 +44,7 @@ func TestMainPage(t *testing.T) {
 func TestInferPage(t *testing.T) {
 	t.Log("Given the need to test the inference page.")
 	{
-		path := "./images/cat.jpg"
+		path := "./test/cat.jpg"
 		file, err := os.Open(path)
 		if err != nil {
 			t.Fatal("\tShould be able to open a file.", ballotX, err)
@@ -55,7 +54,7 @@ func TestInferPage(t *testing.T) {
 
 		body := &bytes.Buffer{}
 		writer := multipart.NewWriter(body)
-		part, err := writer.CreateFormFile("uploadfile", filepath.Base(path))
+		part, err := writer.CreateFormFile("uploadfile", "cat.jpg")
 		if err != nil {
 			t.Fatal("\tShould be able to create form file.", ballotX, err)
 		}
