@@ -63,6 +63,9 @@ RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 WORKDIR "/go/src/github.com/gbaeke/nasnet-go"
 COPY . .
 
+# Test the app
+RUN go test -v
+
 # Install the app
 RUN go build -o /usr/bin/app .
 
