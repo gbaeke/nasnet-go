@@ -11,6 +11,7 @@ import (
 
 func main() {
 	//check environment variables to enable SSL
+	port := getEnv("PORT", "9090")
 	sslEnabled := getEnv("ssl", "false")
 	hostName := getEnv("hostname", "")
 	if hostName == "" && sslEnabled == "true" {
@@ -39,7 +40,7 @@ func main() {
 		}
 	} else {
 		handlers.Routes()
-		log.Fatal(http.ListenAndServe(":9090", nil))
+		log.Fatal(http.ListenAndServe(":"+port, nil))
 	}
 
 }
