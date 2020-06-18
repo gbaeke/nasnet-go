@@ -2,9 +2,9 @@
 
 Web app to classify images with nasnetmobile
 
-Use the Docker image gbaeke/nasnet to try it:
+Use the Docker image gbaeke/nasnet:1.0.5 to try it:
 
-docker run -p 80:9090 -d gbaeke/nasnet
+docker run -p 80:9090 -d gbaeke/nasnet:1.0.5
 
 Afterwards, point a browser at http://localhost and try it out
 
