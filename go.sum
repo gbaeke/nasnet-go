@@ -16,6 +16,9 @@ github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/tensorflow/tensorflow v1.13.1 h1:ygn0+ztXusm6RGVP4Od5IF+8h5sAgD5qbeTvqYyMnjo=
 github.com/tensorflow/tensorflow v1.13.1/go.mod h1:itOSERT4trABok4UOoG+X4BoKds9F3rIsySdn+Lvu90=
+github.com/tensorflow/tensorflow v1.15.4 h1:VHZwmBGxKIrbgGuGi2Gm0hcf+irkK4vltUXzsIk6FJw=
+github.com/tensorflow/tensorflow v1.15.4/go.mod h1:itOSERT4trABok4UOoG+X4BoKds9F3rIsySdn+Lvu90=
+github.com/tensorflow/tensorflow v2.3.1+incompatible h1:44Q8jLdwktDbzAaP6QuRWFl8oAk3a6DE15CJ7t5eGD4=
 golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b h1:Elez2XeF2p9uyVj0yEUDqQ56NFcDtcBNkYP7yv8YbUE=
 golang.org/x/crypto v0.0.0-20190123085648-057139ce5d2b/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/image v0.0.0-20180708004352-c73c2afc3b81 h1:00VmoueYNlNz/aHIilyyQz/MHSqGoWJzpFv/HW8xpzI=
